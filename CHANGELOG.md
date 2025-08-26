@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.2.0 (2025-08-26)
+
+### Features
+
+* Update camel catalogs ([2851d42](https://github.com/KaotoIO/camel-catalog/commit/2851d428f597208c50bd7e037571d6dd71f7c192))
+
 ## 0.1.12 (2025-08-21)
 
 **Note:** Version bump only for package @kaoto/camel-catalog
