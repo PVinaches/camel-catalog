@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.2 (2025-08-28)
+
+### Bug Fixes
+
+* Normalize boolean property when its type is string in catalog but boolean in schema ([050d050](https://github.com/KaotoIO/camel-catalog/commit/050d0508ba758ae7e3d6572126b590e3f5bc9f5a))
+
 ## 0.2.1 (2025-08-26)
 
 **Note:** Version bump only for package @kaoto/camel-catalog
