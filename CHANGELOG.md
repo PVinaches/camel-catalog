@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.4 (2026-01-05)
+
+### Bug Fixes
+
+* update jackson versions to match ([dd7c6bf](https://github.com/KaotoIO/camel-catalog/commit/dd7c6bf3ff219dd8b19f879d95ec559e4ba82194))
+
 ## 0.3.3 (2026-01-05)
 
 ### Bug Fixes
