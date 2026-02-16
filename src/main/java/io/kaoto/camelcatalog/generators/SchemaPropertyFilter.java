@@ -11,7 +11,12 @@ import java.util.Set;
 public class SchemaPropertyFilter {
 
     private final Map<String, List<String>> processorPropertyBlockList;
-
+    /** 
+     * Deleted properties from the schema so that in the construction
+     * of the forms they don't influence the creation of container
+     * i.e. adding an extra component or extra container named steps
+     * as steps include inside the components and EIPs
+     */
     public SchemaPropertyFilter() {
         this.processorPropertyBlockList = Map.ofEntries(
             Map.entry("choice", List.of("when", "otherwise")),
@@ -75,7 +80,7 @@ public class SchemaPropertyFilter {
         if (node.has("properties")) {
             var properties = (ObjectNode) node.get("properties");
             Set<String> propToRemove = new HashSet<>();
-            properties.fields().forEachRemaining(entry -> {
+            properties.properties().forEach(entry -> {
                 if (processorPropertyBlockList.get(eipName).contains(entry.getKey())) {
                     propToRemove.add(entry.getKey());
                 }
