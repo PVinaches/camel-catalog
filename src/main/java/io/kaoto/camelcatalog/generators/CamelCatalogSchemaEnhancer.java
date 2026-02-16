@@ -370,6 +370,74 @@ public class CamelCatalogSchemaEnhancer {
         });
     }
 
+    /**
+     * Enhance the parameters property in the schema by adding metadata.
+     * <p>
+     * This method updates existing "parameters" properties in JSON schemas for endpoint-related
+     * definitions (e.g., from, to, kamelet) by adding standard metadata fields.
+     * It does NOT create new parameters properties - it only enhances existing ones.
+     * <p>
+     *
+     * @param javaType the fully qualified Java type of the Camel model (e.g., "org.apache.camel.model.ToDefinition")
+     * @param schema   the JSON schema node to enhance
+     */
+    public void enhanceParametersProperty(String javaType, ObjectNode schema) {
+        if (javaType == null) {
+            return;
+        }
+
+        // Handle schemas with oneOf (multiple possible schema variants)
+        // Each variant needs to be enhanced independently
+        if (schema.has("oneOf")) {
+            ArrayNode oneOfArray = (ArrayNode) schema.get("oneOf");
+            oneOfArray.forEach(option -> {
+                if (option.isObject()) {
+                    enhanceParametersInNode((ObjectNode) option);
+                }
+            });
+        } else {
+            // Handle simple schema without oneOf
+            enhanceParametersInNode(schema);
+        }
+    }
+
+    /**
+     * Enhance the parameters property within a schema node by adding metadata.
+     * <p>
+     * This method only adds metadata to existing "parameters" properties.
+     * It does NOT create new parameters properties.
+     * <p>
+     *
+     * @param node the JSON schema node to enhance
+     */
+    private void enhanceParametersInNode(ObjectNode node) {
+        if (!node.has("properties")) {
+            return;
+        }
+
+        ObjectNode properties = node.withObject("/properties");
+
+        if (properties.has("parameters")) {
+            ObjectNode parameters = (ObjectNode) properties.get("parameters");
+            setParametersMetadata(parameters);
+        }
+    }
+
+    /**
+     * Set the standard metadata for an endpoint properties parameters object.
+     * <p>
+     * Sets only the essential metadata fields. The 'properties' and 'required' fields
+     * are intentionally omitted here as they should be populated dynamically based on
+     * the actual endpoint component being used.
+     *
+     * @param parameters the parameters object node to configure
+     */
+    private void setParametersMetadata(ObjectNode parameters) {
+        parameters.put("type", "object");
+        parameters.put("title", "Endpoint Properties");
+        parameters.put("description", "The key-value pairs of the properties to configure this endpoint");
+    }
+
     private void addGroupInfo(BaseOptionModel modelOption, ObjectNode propertyNode) {
         String group =
                 modelOption.getGroup() != null ? modelOption.getGroup() : modelOption.getLabel();

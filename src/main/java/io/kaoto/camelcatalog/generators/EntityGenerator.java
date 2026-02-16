@@ -113,6 +113,11 @@ public class EntityGenerator implements Generator {
         camelCatalogSchemaEnhancer.fillPropertiesInformation(processorName, processorJSONSchema);
         camelCatalogSchemaEnhancer.fillModelFormatInOneOf(processorJSONSchema);
 
+        var mainModel = camelCatalog.model(Kind.model, processorName);
+        if (mainModel != null) {
+            camelCatalogSchemaEnhancer.enhanceParametersProperty(mainModel.getJavaType(), processorJSONSchema);
+        }
+
         if (processorJSONSchema.has("definitions")) {
             iterateOverDefinitions(processorJSONSchema.withObject("definitions"), (model, node) -> {
                 if (model == null) {
@@ -123,6 +128,7 @@ public class EntityGenerator implements Generator {
                 camelCatalogSchemaEnhancer.sortPropertiesAccordingToCatalog(model, node);
                 camelCatalogSchemaEnhancer.fillPropertiesInformation(model, node);
                 camelCatalogSchemaEnhancer.fillModelFormatInOneOf(node);
+                camelCatalogSchemaEnhancer.enhanceParametersProperty(model.getJavaType(), node);
             });
         }
     }

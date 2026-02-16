@@ -112,6 +112,11 @@ public class EIPGenerator implements Generator {
         camelCatalogSchemaEnhancer.sortPropertiesAccordingToCatalog(processorName, processorJSONSchema);
         camelCatalogSchemaEnhancer.fillPropertiesInformation(processorName, processorJSONSchema);
         camelCatalogSchemaEnhancer.fillModelFormatInOneOf(processorJSONSchema);
+        
+        EipModel mainModel = camelCatalog.eipModel(processorName);
+        if (mainModel != null) {
+            camelCatalogSchemaEnhancer.enhanceParametersProperty(mainModel.getJavaType(), processorJSONSchema);
+        }
 
         if (processorJSONSchema.has("definitions")) {
             iterateOverDefinitions(processorJSONSchema.withObject("definitions"), (model, node) -> {
@@ -123,6 +128,7 @@ public class EIPGenerator implements Generator {
                 camelCatalogSchemaEnhancer.sortPropertiesAccordingToCatalog(model, node);
                 camelCatalogSchemaEnhancer.fillPropertiesInformation(model, node);
                 camelCatalogSchemaEnhancer.fillModelFormatInOneOf(node);
+                camelCatalogSchemaEnhancer.enhanceParametersProperty(model.getJavaType(), node);
             });
         }
     }
