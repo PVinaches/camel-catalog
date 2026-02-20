@@ -21,9 +21,6 @@ public class SchemaPropertyFilter {
         this.processorPropertyBlockList = Map.ofEntries(
             Map.entry("choice", List.of("when", "otherwise")),
             Map.entry("doTry", List.of("doCatch", "doFinally", "steps")),
-            Map.entry("to", List.of("parameters")),
-            Map.entry("toD", List.of("parameters")),
-            Map.entry("wireTap", List.of("parameters")),
             Map.entry("when", List.of("steps")),
             Map.entry("otherwise", List.of("steps")),
             Map.entry("doCatch", List.of("steps")),
@@ -54,7 +51,7 @@ public class SchemaPropertyFilter {
             Map.entry("onCompletion", List.of("steps")),
             Map.entry("onException", List.of("steps"))
         );
-    }
+      }
 
     void schemaPropertyFilter(String eipName, ObjectNode node) {
         if (!processorPropertyBlockList.containsKey(eipName)) return;

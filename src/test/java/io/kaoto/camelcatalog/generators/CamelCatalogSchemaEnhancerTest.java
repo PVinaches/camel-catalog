@@ -628,4 +628,100 @@ class CamelCatalogSchemaEnhancerTest {
         var defaultValue = propertyNode.get("default");
         assertTrue(defaultValue.isTextual());
     }
+
+    @Test
+    void shouldNotCreateParametersPropertyForAllowedJavaTypeWithoutExistingParameters() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        ObjectNode properties = jsonMapper.createObjectNode();
+        schema.set("properties", properties);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty("org.apache.camel.model.ToDefinition", schema);
+
+        assertFalse(properties.has("parameters"));
+    }
+
+    @Test
+    void shouldNotCreateParametersPropertyForNonAllowedJavaTypeWithoutExistingParameters() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        ObjectNode properties = jsonMapper.createObjectNode();
+        schema.set("properties", properties);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty("org.apache.camel.model.ChoiceDefinition", schema);
+
+        assertFalse(properties.has("parameters"));
+    }
+
+    @Test
+    void shouldEnhanceExistingParametersForNonAllowedJavaType() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        ObjectNode properties = jsonMapper.createObjectNode();
+        ObjectNode existingParameters = jsonMapper.createObjectNode();
+        existingParameters.put("existingField", "value");
+        properties.set("parameters", existingParameters);
+        schema.set("properties", properties);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty("org.apache.camel.model.ChoiceDefinition", schema);
+
+        ObjectNode parameters = (ObjectNode) properties.get("parameters");
+        assertEquals("object", parameters.get("type").asText());
+        assertEquals("Endpoint Properties", parameters.get("title").asText());
+        assertEquals("The key-value pairs of the properties to configure this endpoint", parameters.get("description").asText());
+        assertTrue(parameters.has("existingField"));
+    }
+
+    @Test
+    void shouldNotEnhanceParametersPropertyForNullJavaType() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        ObjectNode properties = jsonMapper.createObjectNode();
+        schema.set("properties", properties);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty(null, schema);
+
+        assertFalse(properties.has("parameters"));
+    }
+
+    @Test
+    void shouldNotCreateParametersPropertyInOneOfWithoutExistingParameters() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        var oneOfArray = schema.putArray("oneOf");
+        
+        ObjectNode option1 = jsonMapper.createObjectNode();
+        ObjectNode properties1 = jsonMapper.createObjectNode();
+        option1.set("properties", properties1);
+        oneOfArray.add(option1);
+        
+        ObjectNode option2 = jsonMapper.createObjectNode();
+        ObjectNode properties2 = jsonMapper.createObjectNode();
+        option2.set("properties", properties2);
+        oneOfArray.add(option2);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty("org.apache.camel.model.ToDefinition", schema);
+
+        assertFalse(properties1.has("parameters"));
+        assertFalse(properties2.has("parameters"));
+    }
+
+    @Test
+    void shouldUpdateExistingParametersMetadata() {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        ObjectNode schema = jsonMapper.createObjectNode();
+        ObjectNode properties = jsonMapper.createObjectNode();
+        ObjectNode existingParameters = jsonMapper.createObjectNode();
+        existingParameters.put("existingField", "value");
+        properties.set("parameters", existingParameters);
+        schema.set("properties", properties);
+
+        camelCatalogSchemaEnhancer.enhanceParametersProperty("org.apache.camel.model.ToDefinition", schema);
+
+        ObjectNode parameters = (ObjectNode) properties.get("parameters");
+        assertEquals("object", parameters.get("type").asText());
+        assertEquals("Endpoint Properties", parameters.get("title").asText());
+        assertEquals("The key-value pairs of the properties to configure this endpoint", parameters.get("description").asText());
+        assertTrue(parameters.has("existingField"));
+    }
 }
